@@ -3,13 +3,17 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 
+# Method to get rating, with concept of mapper
 def get_rating(txt):
     mapper = {"one" : 1, "two" : 2, "three" : 3, "four" : 4, "five" : 5}
     return mapper[txt]
+
+# Variable to store data
 names = []
 prices = []
 ratings = []
 
+# Enumerate the pages
 for page_number in range(1, 10):
     if page_number == 1:
         uri = 'https://books.toscrape.com/catalogue/category/books/nonfiction_13/index.html'
@@ -17,12 +21,15 @@ for page_number in range(1, 10):
         uri = f'https://books.toscrape.com/catalogue/category/books/nonfiction_13/page-{page_number}.html'
     response = requests.get(uri)
 
+    # Check the response if it is 200
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, "html.parser")
         products = soup.find_all("article", class_="product_pod")
         rating_pattern = re.compile("star-rating.*")
- 
 
+        # Enumerate the products in the page
+        # Get the name, price and rating
+        # Append the data
         for product in products:
             product_name_tag = product.find("h3").text
             names.append(product_name_tag)
@@ -35,10 +42,13 @@ for page_number in range(1, 10):
             rating_num = get_rating(rating_tag["class"][1].lower())
             ratings.append(rating_num)
 
+# Create a dataframe
 df = pd.DataFrame({
   "Name" : names,
   "Price" : prices,
   "Rating" : ratings
 })
 
+# Save the dataframe as a csv
 df.to_csv("books.csv")
+print("Done!")
