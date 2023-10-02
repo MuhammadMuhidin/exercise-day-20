@@ -1,17 +1,22 @@
 import re
 import requests
 import pandas as pd
+import sqlite3
 from bs4 import BeautifulSoup
+
+
+# Connect to the database
+conn = sqlite3.connect("books.db")
+
+# Create variable to store data
+names = []
+prices = []
+ratings = []
 
 # Method to get rating, with concept of mapper
 def get_rating(txt):
     mapper = {"one" : 1, "two" : 2, "three" : 3, "four" : 4, "five" : 5}
     return mapper[txt]
-
-# Variable to store data
-names = []
-prices = []
-ratings = []
 
 # Enumerate the pages
 for page_number in range(1, 10):
@@ -49,6 +54,6 @@ df = pd.DataFrame({
   "Rating" : ratings
 })
 
-# Save the dataframe as a csv
-df.to_csv("books.csv")
-print("Done!")
+# Save the dataframe as a sqlite database
+df.to_sql("books", conn, index=False, if_exists="replace")
+print("Scapping success, file saved as books.db")
