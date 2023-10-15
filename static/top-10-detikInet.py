@@ -1,11 +1,12 @@
 import requests
 import pandas as pd
-import sqlite3
 from bs4 import BeautifulSoup
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
-uri = "mongodb+srv://muhammadmuhidin222:xjkmMO5wyx5WdNi9@cluster0.usomldt.mongodb.net/?retryWrites=true&w=majority"
+
+with open('mongodb_uri.txt', 'r') as file:
+    uri = file.read().strip()
 client = MongoClient(uri, server_api=ServerApi('1'))
 
 judul_list = []
