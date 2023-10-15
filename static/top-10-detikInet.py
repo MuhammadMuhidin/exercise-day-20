@@ -2,8 +2,12 @@ import requests
 import pandas as pd
 import sqlite3
 from bs4 import BeautifulSoup
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 
-conn = sqlite3.connect("detik.db")
+uri = "mongodb+srv://muhammadmuhidin222:xjkmMO5wyx5WdNi9@cluster0.usomldt.mongodb.net/?retryWrites=true&w=majority"
+client = MongoClient(uri, server_api=ServerApi('1'))
+
 judul_list = []
 link_list = []
 
@@ -29,8 +33,15 @@ df = pd.DataFrame({
     "Link": link_list
 })
 df = df.head(10)
-df.to_sql("top_10_indeks", conn, index=False, if_exists="replace")
-print("Scapping success, file saved as detik.db")
+
+db = client["detik"]
+collection = db["top_10_indeks"]
+collection.insert_many(df.to_dict(orient="records"))
+client.close()
+
+
+
+
 
 
 
